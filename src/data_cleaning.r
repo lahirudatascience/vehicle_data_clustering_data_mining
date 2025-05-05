@@ -1,7 +1,5 @@
 # Load necessary libraries
 library(tidyverse)    # For data manipulation and visualization
-library(factoextra)   # For clustering visualization
-library(cluster)      # For clustering algorithms
 library(gridExtra)   # For arranging multiple plots
 library(GGally)      # For pairwise plots
 library(mice)        # For missing data imputation
