@@ -31,7 +31,7 @@ sum(is.na(vehicles_complete))
 missing_values <- sapply(vehicles_complete, function(x) sum(is.na(x)))
 print(missing_values)
 
-# Function to detect outliers using Tukey's method
+# Function to detect outliers
 detect_outliers <- function(x) {
   q1 <- quantile(x, 0.25)
   q3 <- quantile(x, 0.75)
