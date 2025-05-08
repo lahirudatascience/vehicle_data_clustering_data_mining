@@ -1,3 +1,4 @@
+
 # 🚗 Vehicle Silhouette Clustering Project
 
 ## 📁 Project Structure
@@ -7,24 +8,37 @@
 ├── dataset/
 │   ├── vehicles.csv                    # Original raw vehicle dataset
 │   ├── vehicles_cleaned.csv           # Cleaned and winsorized dataset
-│   ├── pca_scores.csv                 # PCA-reduced data with class labels
-│   └── pca_kmeans_results.csv         # Silhouette scores across k and PC dimensions
+│   ├── feature_variances.csv          # Feature variances from PCA
+│   ├── pca_hc_clusters.csv            # Cluster assignments from hierarchical clustering
+│   ├── pca_variance_explained.csv     # PCA explained variance data
+│   ├── silhouette_score_summary.csv   # Silhouette scores for clustering runs
 ├── models/
 │   ├── pca_model.rds                  # Saved PCA model
-│   └── kmeans_model.rds               # Saved K-Means clustering model
+│   ├── kmeans_model.rds               # Saved K-Means clustering model
+│   └── hierarchical_model.rds        # Saved Hierarchical clustering model
 ├── src/
 │   ├── data_cleaning.r                # Script for cleaning, imputing, and outlier handling
-│   ├── dataset_pca.r                  # Script for performing PCA
-│   └── dataset_pca_clustering.r       # Script for optimal K-means clustering using silhouette
+│   ├── dataset_pca_clustering.r       # Script for optimal K-means clustering using silhouette
+│   └── hirachicle_clustering.r        # Script for hierarchical clustering and dendrogram analysis
 ├── visuals/
-│   ├── pca_scree_plot.png
-│   ├── pca_variable_contribution.png
-│   ├── pca_biplot_with_class.png
+│   ├── feature_variance_plot.png
+│   ├── kmeans_clusters.png
+│   ├── kmeans_elbow_plot.png
 │   ├── pca_biplot_kmeans_clusters.png
 │   ├── pca_scatter_plot.png
-│   ├── kmeans_elbow_plot.png
-│   ├── kmeans_clusters.png
+│   ├── pca_scree_plot.png
+│   ├── pca_variable_contribution.png
 │   └── silhouette_plot.png
+├── visuals_dendrogram/
+│   ├── cophenetic_corrplot.png
+│   ├── dendrogram.png
+│   ├── fviz_dend_colored.png
+│   ├── hc_heatmap.png
+│   ├── hc_scree_plot.png
+│   ├── pca_biplot_hc_clusters.png
+│   ├── pca_feature_contributions.png
+│   ├── Rplot.png
+│   └── silhouette_hc.png
 └── README.md                          # Project documentation
 ```
 
@@ -37,6 +51,7 @@ This project explores unsupervised clustering of vehicle silhouettes using image
 ### Techniques used:
 - **Principal Component Analysis (PCA)** for reducing 18 shape-related features
 - **K-Means Clustering** for partitioning vehicle types
+- **Hierarchical Clustering** for visual grouping and dendrogram analysis
 - **Silhouette Analysis** to determine the optimal number of clusters and dimensionality
 
 ---
@@ -69,6 +84,10 @@ Shape descriptors were extracted using the HIPS system and include:
 | `GGally`      | Scatter matrix plots |
 | `mice`        | Missing data imputation |
 | `outliers`    | Tukey-based outlier detection |
+| `dendextend`  | Enhanced dendrogram visualizations |
+| `gplots`      | Heatmaps for hierarchical clusters |
+| `colorspace`  | Cluster-based color mapping |
+| `corrplot`    | Correlation matrix visualization |
 
 ---
 
@@ -78,25 +97,28 @@ Shape descriptors were extracted using the HIPS system and include:
    - Imputed missing values using Predictive Mean Matching (`mice`)
    - Detected and winsorized outliers across all numeric features
 
-2. **Dimensionality Reduction (`dataset_pca.r`)**
-   - Applied PCA to reduce from 18 features to 2–3 principal components
+2. **Dimensionality Reduction (`dataset_pca_clustering.r`)**
+   - Applied PCA to reduce from 18 features to top 2–3 principal components
 
-3. **Clustering and Optimization (`dataset_pca_clustering.r`)**
-   - K-Means clustering tested over `k = 2:6` and PC1:2 vs PC1:3
-   - Optimal `k` and PC count selected via average silhouette score
-   - Final clustering applied and results saved
+3. **K-Means Clustering**
+   - Evaluated clusters for `k = 2:6` on PC1:2 and PC1:3
+   - Selected optimal config using average silhouette scores
+   - Final clustering saved in `pca_kmeans_results.csv`
+
+4. **Hierarchical Clustering (`hirachicle_clustering.r`)**
+   - Generated dendrograms and heatmaps
+   - Visualized correlation and cophenetic distances
+   - Saved cluster assignments in `pca_hc_clusters.csv`
 
 ---
 
 ## 📈 Visual Outputs
 
-All visuals saved in the `/visuals` folder:
-- **PCA Scree Plot** — Variance explained by components
-- **PCA Variable Contribution Plot**
-- **PCA Biplot (with Class Labels & Cluster Labels)**
-- **K-Means Elbow Plot**
-- **K-Means Cluster Assignment**
-- **Silhouette Plot** — Measures cluster separation quality
+All visuals saved in the `/visuals` and `/visuals_dendrogram` folders:
+- **PCA Scree & Contribution Plots**
+- **PCA Biplots with Class and Cluster Labels**
+- **K-Means Elbow, Cluster Assignment, and Silhouette Plots**
+- **Hierarchical Dendrograms, Cophenetic Correlations, and Heatmaps**
 
 ---
 
