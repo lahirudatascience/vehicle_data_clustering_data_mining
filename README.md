@@ -5,95 +5,116 @@
 ```
 .
 ├── dataset/
-│   └── vehicles.csv              # Input dataset with 846 vehicle observations
+│   ├── vehicles.csv                    # Original raw vehicle dataset
+│   ├── vehicles_cleaned.csv           # Cleaned and winsorized dataset
+│   ├── pca_scores.csv                 # PCA-reduced data with class labels
+│   └── pca_kmeans_results.csv         # Silhouette scores across k and PC dimensions
+├── models/
+│   ├── pca_model.rds                  # Saved PCA model
+│   └── kmeans_model.rds               # Saved K-Means clustering model
 ├── src/
-│   └── data_cleaning.r           # R script for data preprocessing and missing value handling
-└── README.md                     # Project documentation
+│   ├── data_cleaning.r                # Script for cleaning, imputing, and outlier handling
+│   ├── dataset_pca.r                  # Script for performing PCA
+│   └── dataset_pca_clustering.r       # Script for optimal K-means clustering using silhouette
+├── visuals/
+│   ├── pca_scree_plot.png
+│   ├── pca_variable_contribution.png
+│   ├── pca_biplot_with_class.png
+│   ├── pca_biplot_kmeans_clusters.png
+│   ├── pca_scatter_plot.png
+│   ├── kmeans_elbow_plot.png
+│   ├── kmeans_clusters.png
+│   └── silhouette_plot.png
+└── README.md                          # Project documentation
 ```
 
 ---
 
 ## 📊 Project Overview
 
-This project focuses on unsupervised clustering of vehicle silhouettes using shape-based numerical features extracted from images. The objective is to discover underlying groupings (clusters) among different types of vehicles using two key clustering approaches, following dimensionality reduction:
+This project explores unsupervised clustering of vehicle silhouettes using image-derived shape features. The objective is to automatically discover meaningful groupings in the data, guided by dimensionality reduction and clustering quality metrics.
 
-- **K-Means Clustering**
-- **Agglomerative Hierarchical Clustering**
-
-Both techniques are preceded by **Principal Component Analysis (PCA)** to reduce dimensionality and improve interpretability.
+### Techniques used:
+- **Principal Component Analysis (PCA)** for reducing 18 shape-related features
+- **K-Means Clustering** for partitioning vehicle types
+- **Silhouette Analysis** to determine the optimal number of clusters and dimensionality
 
 ---
 
 ## 🧾 Dataset Summary
 
 - **File**: `vehicles.csv`
-- **Size**: 846 observations (rows)
-- **Features**: 18 numerical features + 1 categorical `Class` variable
+- **Observations**: 846 vehicles
+- **Features**: 18 numerical shape descriptors + 1 class label
 - **Classes**:
   - Double Decker Bus
   - Chevrolet Van
   - Saab
   - Opel Manta
 
-These features were extracted using the HIPS (Hierarchical Image Processing System) extension **BINATTS**, incorporating shape-related descriptors such as:
-
+Shape descriptors were extracted using the HIPS system and include:
 - Classical Moments: Variance, Skewness, Kurtosis
-- Heuristics: Circularity, Compactness, Rectangularity
+- Shape Heuristics: Compactness, Elongation, Circularity
 
 ---
 
-## 📦 R Libraries Used
+## 📦 R Packages Used
 
 | Package       | Purpose |
 |---------------|---------|
-| `tidyverse`   | Data manipulation and visualization |
-| `factoextra`  | Clustering visualization (e.g., PCA plots) |
-| `cluster`     | Clustering algorithms |
-| `gridExtra`   | Arranging multiple plots |
-| `GGally`      | Pairwise plots and advanced visualization |
+| `tidyverse`   | Data wrangling and plotting |
+| `factoextra`  | PCA and cluster visualization |
+| `cluster`     | Clustering algorithms and silhouette analysis |
+| `gridExtra`   | Arrange plots |
+| `GGally`      | Scatter matrix plots |
 | `mice`        | Missing data imputation |
-| `outliers`    | Detecting outliers in the data |
+| `outliers`    | Tukey-based outlier detection |
 
 ---
 
-## 🧪 Analysis Workflow
+## 🔍 Analysis Workflow
 
-1. **Data Cleaning**:
-   - Handled missing values using `mice` package with Predictive Mean Matching (PMM).
-   - Checked for outliers using `outliers` package.
+1. **Data Cleaning (`data_cleaning.r`)**
+   - Imputed missing values using Predictive Mean Matching (`mice`)
+   - Detected and winsorized outliers across all numeric features
 
-2. **Dimensionality Reduction**:
-   - Performed PCA to reduce from 18 numerical features to 2-3 principal components.
+2. **Dimensionality Reduction (`dataset_pca.r`)**
+   - Applied PCA to reduce from 18 features to 2–3 principal components
 
-3. **Clustering**:
-   - Applied K-Means clustering on PCA-reduced data.
-   - Applied Agglomerative Hierarchical clustering.
-   - Visualized results using cluster plots and dendrograms.
-
----
-
-## 📈 Visualizations
-
-- **PCA Scatter Plots** for reduced feature space
-- **Cluster Plots** for K-Means and Hierarchical results
-- **Dendrograms** to visualize hierarchy
-- **Silhouette Scores** to assess clustering quality
+3. **Clustering and Optimization (`dataset_pca_clustering.r`)**
+   - K-Means clustering tested over `k = 2:6` and PC1:2 vs PC1:3
+   - Optimal `k` and PC count selected via average silhouette score
+   - Final clustering applied and results saved
 
 ---
 
-## 💼 Business Value
+## 📈 Visual Outputs
 
-Cluster analysis in this context can:
-- Assist manufacturers and designers in distinguishing between vehicle types based on visual silhouette.
-- Enhance autonomous vehicle recognition systems by pre-identifying vehicle clusters.
-- Support R&D and market positioning by recognizing shape-based product similarities.
-- Aid in anomaly or prototype detection within datasets of vehicle images.
+All visuals saved in the `/visuals` folder:
+- **PCA Scree Plot** — Variance explained by components
+- **PCA Variable Contribution Plot**
+- **PCA Biplot (with Class Labels & Cluster Labels)**
+- **K-Means Elbow Plot**
+- **K-Means Cluster Assignment**
+- **Silhouette Plot** — Measures cluster separation quality
 
 ---
 
-## 👤 Author
+## 🏆 Results
 
-This project was implemented in **R** using **RStudio**.
+- Best clustering found using **k = _X_** and **PC1:_Y_** (automatically selected via silhouette score)
+- Average Silhouette Score: **_Z.ZZ_**
+- Clusters showed strong visual separation and low intra-cluster variance
 
-_Last updated: April 2025_
-"""
+_Note: Replace `X`, `Y`, and `Z.ZZ` with actual values once results are known._
+
+---
+
+## 💼 Business Use Cases
+
+- Understand how vehicle shape can define product segmentation
+- Enhance machine vision systems with shape-based cluster priors
+- Detect outliers or prototype anomalies
+- Support competitive shape benchmarking in R&D and design
+
+---
